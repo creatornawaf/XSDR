@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XSDR Injector</title>
+    
+    <!-- Discord Embed Meta Tags -->
+    <link rel="icon" type="image/png" href="Injector.png"
+    <meta property="og:title" content="XSDR Injector" />
+    <meta property="og:description" content="Join the XSDR Injector community on Discord and check out the project on GitHub." />
+    <meta property="og:url" content="https://creatornawaf.github.io" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://creatornawaf.github.io/Injector.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="XSDR Injector" />
+    <meta name="twitter:description" content="Join the XSDR Injector community on Discord and check out the project on GitHub." />
+    <meta name="twitter:image" content="https://creatornawaf.github.io/Injector.png" />
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* Canvas للخلفية */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            display: block;
+        }
+
+        /* المحتوى */
+        .content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            perspective: 1200px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            border-radius: 30px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 60px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            transition: transform 0.1s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            will-change: transform;
+        }
+
+        .logo h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #ffffff, #aaaaaa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            color: #cccccc;
+            font-size: 1rem;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+        }
+
+        .btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .discord {
+            background: #5865F2;
+            color: white;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        .discord:hover {
+            background: #4752c4;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(88, 101, 242, 0.4);
+        }
+
+        .github {
+            background: #24292e;
+            color: white;
+            box-shadow: 0 4px 15px rgba(36, 41, 46, 0.3);
+        }
+
+        .github:hover {
+            background: #1a1e22;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(36, 41, 46, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+        }
+
+        .footer {
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: #aaaaaa;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: #ffffff;
+        }
+
+        @media (max-width: 480px) {
+            .btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+                gap: 8px;
+            }
+            .logo h1 {
+                font-size: 2rem;
+            }
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    
+    <div class="content">
+        <div class="container" id="ui-container">
+            <div class="logo">
+                <h1>XSDR Injector</h1>
+                <p>Choose your platform to get started</p>
+            </div>
+
+            <div class="button-container">
+                <a href="https://discord.gg/bwfWyp3Xa" target="_blank" rel="noopener noreferrer" class="btn discord">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36">
+                        <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.63,105.63,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.86.68,1.75,1.36,2.66,2a68.42,68.42,0,0,1-10.85,5.18,77.7,77.7,0,0,0,6.89,11.11A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69c-3.43,0-6.23-3.19-6.23-7.1s2.77-7.1,6.23-7.1,6.25,3.19,6.23,7.1S45.89,65.69,42.45,65.69Zm42.24,0c-3.43,0-6.23-3.19-6.23-7.1s2.77-7.1,6.23-7.1,6.25,3.19,6.23,7.1S88.12,65.69,84.69,65.69Z"/>
+                    </svg>
+                    Join Discord Server
+                </a>
+
+                <a href="https://github.com/creatornawaf/XSDR-Injector" target="_blank" rel="noopener noreferrer" class="btn github">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                    View on GitHub
+                </a>
+            </div>
+
+            <div class="footer">
+                <p>© 2026 XSDR Injector | <a href="https://github.com/creatornawaf/XSDR-Injector" target="_blank">Open Source Project</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- عنصر الصوت (بدون زر) -->
+<!-- عنصر الصوت -->
+<audio id="bgMusic" loop preload="auto">
+    <source src="https://creatornawaf.github.io/music.mp3" type="audio/mpeg">
+</audio>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+    
+            const audio = document.getElementById('bgMusic');
+            audio.volume = 0.4;
+    
+               // لما المستخدم يضغط على أي مكان، تشتغل الموسيقى
+            document.body.addEventListener('click', function play() {
+                audio.play().then(() => {
+                    console.log("اشتغلت الموسيقى");
+                }).catch(err => {
+                    console.log("خطأ: " + err);
+                });
+                document.body.removeEventListener('click', play);
+            });
+
+        // ========== الكود الثلاثي الأبعاد ==========
+        const canvas = document.getElementById('bg-canvas');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x000000);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 14);
+
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        // عنصر الواجهة
+        const uiContainer = document.getElementById('ui-container');
+
+        // ========== إضاءة بيضاء ==========
+        const ambientLight = new THREE.AmbientLight(0x222222);
+        scene.add(ambientLight);
+        
+        const whiteLight = new THREE.PointLight(0xffffff, 0.7);
+        whiteLight.position.set(2, 3, 4);
+        scene.add(whiteLight);
+        
+        const whiteLight2 = new THREE.PointLight(0xcccccc, 0.4);
+        whiteLight2.position.set(-2, 1, 3);
+        scene.add(whiteLight2);
+        
+        // ========== شبكة النقاط والخطوط البيضاء ==========
+        const nodeCount = 100;
+        const nodes = [];
+        const nodeGeo = new THREE.SphereGeometry(0.08, 8, 8);
+        
+        // موقع الماوس
+        const mouse = { x: 0, y: 0 };
+        
+        // إنشاء النقاط
+        for (let i = 0; i < nodeCount; i++) {
+            const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x333333 });
+            const node = new THREE.Mesh(nodeGeo, mat);
+            
+            node.position.x = (Math.random() - 0.5) * 25;
+            node.position.y = (Math.random() - 0.5) * 18;
+            node.position.z = (Math.random() - 0.5) * 20 - 6;
+            
+            node.userData = {
+                speedX: (Math.random() - 0.5) * 0.008,
+                speedY: (Math.random() - 0.5) * 0.008,
+                speedZ: (Math.random() - 0.5) * 0.008
+            };
+            scene.add(node);
+            nodes.push(node);
+        }
+        
+        // الخطوط البيضاء
+        let lines = [];
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+        
+        function updateLines() {
+            lines.forEach(line => scene.remove(line));
+            lines = [];
+            
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].position.x - nodes[j].position.x;
+                    const dy = nodes[i].position.y - nodes[j].position.y;
+                    const dz = nodes[i].position.z - nodes[j].position.z;
+                    const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                    
+                    if (dist < 4.2) {
+                        const points = [
+                            new THREE.Vector3(nodes[i].position.x, nodes[i].position.y, nodes[i].position.z),
+                            new THREE.Vector3(nodes[j].position.x, nodes[j].position.y, nodes[j].position.z)
+                        ];
+                        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                        const line = new THREE.Line(geometry, lineMaterial);
+                        scene.add(line);
+                        lines.push(line);
+                    }
+                }
+            }
+        }
+        
+        // نجوم بيضاء
+        const starGeo = new THREE.BufferGeometry();
+        const starCount = 2000;
+        const starPositions = new Float32Array(starCount * 3);
+        for (let i = 0; i < starCount; i++) {
+            starPositions[i*3] = (Math.random() - 0.5) * 250;
+            starPositions[i*3+1] = (Math.random() - 0.5) * 150;
+            starPositions[i*3+2] = (Math.random() - 0.5) * 100 - 50;
+        }
+        starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05 });
+        const stars = new THREE.Points(starGeo, starMat);
+        scene.add(stars);
+        
+        // تأثير الماوس
+        document.addEventListener('mousemove', (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = (event.clientY / window.innerHeight) * 2 - 1;
+        });
+        
+        // جسيمات صغيرة
+        const smallParticles = [];
+        const smallGeo = new THREE.SphereGeometry(0.035, 4, 4);
+        for (let i = 0; i < 500; i++) {
+            const mat = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+            const p = new THREE.Mesh(smallGeo, mat);
+            p.position.x = (Math.random() - 0.5) * 28;
+            p.position.y = (Math.random() - 0.5) * 20;
+            p.position.z = (Math.random() - 0.5) * 25 - 10;
+            p.userData = {
+                velX: (Math.random() - 0.5) * 0.02,
+                velY: (Math.random() - 0.5) * 0.02,
+                velZ: (Math.random() - 0.5) * 0.02
+            };
+            scene.add(p);
+            smallParticles.push(p);
+        }
+        
+        setTimeout(() => updateLines(), 50);
+        
+        let time = 0;
+        
+        // متغيرات للحركة الثلاثية الأبعاد للUI
+        let targetRotateX = 0;
+        let targetRotateY = 0;
+        let targetTranslateX = 0;
+        let targetTranslateY = 0;
+        
+        let currentRotateX = 0;
+        let currentRotateY = 0;
+        let currentTranslateX = 0;
+        let currentTranslateY = 0;
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.02;
+            
+            // حركة الكاميرا التلقائية
+            const camAngle = Math.sin(time * 0.3) * 0.4;
+            const camYAngle = Math.cos(time * 0.25) * 0.3;
+            
+            camera.position.x = camAngle;
+            camera.position.y = camYAngle;
+            camera.lookAt(0, 0, 0);
+            
+            // تأثير الماوس على الكاميرا
+            const mouseCamX = mouse.x * 0.3;
+            const mouseCamY = -mouse.y * 0.25;
+            camera.position.x = camAngle + mouseCamX;
+            camera.position.y = camYAngle + mouseCamY;
+            camera.lookAt(0, 0, 0);
+            
+            // ========== حركة UI الثلاثية الأبعاد ==========
+            targetRotateX = (mouse.y * 8) + (Math.sin(time * 0.5) * 3);
+            targetRotateY = (mouse.x * 8) + (Math.cos(time * 0.4) * 3);
+            
+            targetTranslateX = mouse.x * 15;
+            targetTranslateY = mouse.y * 12;
+            
+            currentRotateX += (targetRotateX - currentRotateX) * 0.08;
+            currentRotateY += (targetRotateY - currentRotateY) * 0.08;
+            currentTranslateX += (targetTranslateX - currentTranslateX) * 0.08;
+            currentTranslateY += (targetTranslateY - currentTranslateY) * 0.08;
+            
+            if (uiContainer) {
+                uiContainer.style.transform = `
+                    translate(${currentTranslateX}px, ${currentTranslateY}px)
+                    rotateX(${currentRotateX}deg) 
+                    rotateY(${currentRotateY}deg)
+                `;
+            }
+            
+            // تحريك النقاط
+            nodes.forEach((node, idx) => {
+                node.position.x += node.userData.speedX;
+                node.position.y += node.userData.speedY;
+                node.position.z += node.userData.speedZ;
+                
+                const mouseInfluenceX = mouse.x * 2;
+                const mouseInfluenceY = mouse.y * 1.5;
+                const dx = node.position.x - mouseInfluenceX * 4;
+                const dy = node.position.y - mouseInfluenceY * 3;
+                const distToMouse = Math.sqrt(dx*dx + dy*dy);
+                if (distToMouse < 3) {
+                    const angle = Math.atan2(dy, dx);
+                    const force = (3 - distToMouse) * 0.08;
+                    node.position.x += Math.cos(angle) * force;
+                    node.position.y += Math.sin(angle) * force;
+                }
+                
+                if (Math.abs(node.position.x) > 14) node.userData.speedX *= -1;
+                if (Math.abs(node.position.y) > 11) node.userData.speedY *= -1;
+                if (Math.abs(node.position.z) > 12) node.userData.speedZ *= -1;
+                
+                node.position.x = Math.min(14, Math.max(-14, node.position.x));
+                node.position.y = Math.min(11, Math.max(-11, node.position.y));
+                node.position.z = Math.min(12, Math.max(-13, node.position.z));
+            });
+            
+            updateLines();
+            
+            smallParticles.forEach(p => {
+                p.position.x += p.userData.velX;
+                p.position.y += p.userData.velY;
+                p.position.z += p.userData.velZ;
+                
+                const mouseInfluenceX = mouse.x * 2;
+                const mouseInfluenceY = mouse.y * 1.5;
+                const dx = p.position.x - mouseInfluenceX * 4;
+                const dy = p.position.y - mouseInfluenceY * 3;
+                const distToMouse = Math.sqrt(dx*dx + dy*dy);
+                if (distToMouse < 2.5) {
+                    const angle = Math.atan2(dy, dx);
+                    const force = (2.5 - distToMouse) * 0.12;
+                    p.position.x += Math.cos(angle) * force;
+                    p.position.y += Math.sin(angle) * force;
+                }
+                
+                if (Math.abs(p.position.x) > 16) p.userData.velX *= -1;
+                if (Math.abs(p.position.y) > 13) p.userData.velY *= -1;
+                if (Math.abs(p.position.z) > 14) p.userData.velZ *= -1;
+            });
+            
+            stars.rotation.y += 0.0006;
+            stars.rotation.x += 0.0004;
+            
+            whiteLight.intensity = 0.55 + Math.sin(time * 2) * 0.15;
+            whiteLight2.intensity = 0.35 + Math.cos(time * 1.8) * 0.1;
+            
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
